@@ -1,0 +1,15 @@
+export const categoriesList = [
+  "Software Development",
+  "Hardware and Electronics",
+  "Data Science and Analytics",
+  "Engineering and Mechanics",
+  "Art and Design",
+  "Science and Research",
+  "Business and Entrepreneurship",
+  "Social and Community Service",
+  "Education and Teaching",
+  "Writing and Literature",
+  "Health and Wellness",
+  "Environmental Sustainability",
+  "Other",
+];
