@@ -36,6 +36,16 @@ const style = {
   outline: "none",
 };
 
+const validations = {
+  firstName: "Please enter First Name",
+  lastName: "Please enter Last Name",
+  userImagePath: "Please upload profile image",
+  userimagePath: "Please upload profile image",
+  address: "Please enter your address",
+  contactNumber: "Please enter Contact Number",
+  designation: "Please enter Designation",
+};
+
 export default function ProfileForm({ isEdit = false, data = {}, onClose = () => {} }) {
   const [userData, setUserData] = useState(
     isEdit
@@ -54,6 +64,7 @@ export default function ProfileForm({ isEdit = false, data = {}, onClose = () =>
         }
   );
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const {
     appState: {
@@ -103,18 +114,34 @@ export default function ProfileForm({ isEdit = false, data = {}, onClose = () =>
     }));
   };
 
+  const checkValidation = (data) => {
+    let error = "";
+    Object.keys(validations).forEach((item) => {
+      if (!error && !data[item]) {
+        error = validations[item];
+      }
+    });
+    return error;
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
+    setError("");
     try {
-      const { designation } = userData;
-      if (!designation || !username) return;
+      const validationMsg = checkValidation({
+        ...userData,
+        userImagePath: userData?.userimagePath || userData?.userImagePath || data?.userImagePath || data?.userimagePath,
+        userimagePath: userData?.userimagePath || userData?.userImagePath || data?.userImagePath || data?.userimagePath,
+      });
+      if (validationMsg) throw new Error(validationMsg);
       if (isEdit) {
-        await updateProfile({ ...userData, email: username });
+        await updateProfile({ ...userData, userImagePath: userData?.userImagePath || data?.userImagePath, email: username });
         onClose();
       } else {
         await addProfile({ ...userData, email: username });
       }
     } catch (error) {
+      setError(error?.message || "Something went wrong, please try again later");
     } finally {
       setLoading(false);
     }
@@ -138,16 +165,23 @@ export default function ProfileForm({ isEdit = false, data = {}, onClose = () =>
             }}
           />
           <div style={{ display: "flex", gap: "1rem" }}>
-            <TextField size="small" fullWidth label="First Name" name="firstName" value={userData.firstName} onChange={handleValueChange} />
-            <TextField size="small" fullWidth label="Last Name" name="lastName" value={userData.lastName} onChange={handleValueChange} />
+            <TextField size="small" fullWidth label="First Name" required name="firstName" value={userData.firstName} onChange={handleValueChange} />
+            <TextField size="small" fullWidth label="Last Name" required name="lastName" value={userData.lastName} onChange={handleValueChange} />
           </div>
-          <TextField size="small" label="Designation" name="designation" value={userData.designation} onChange={handleValueChange} />
-          <TextField size="small" label="Email" name="email" disabled value={userData.email || username} onChange={handleValueChange} />
-          <TextField size="small" label="Contact Number" name="contactNumber" value={userData.contactNumber} onChange={handleValueChange} />
-          <TextField size="small" label="Address" name="address" value={userData.address} onChange={handleValueChange} />
+          <TextField size="small" label="Designation" required name="designation" value={userData.designation} onChange={handleValueChange} />
+          <TextField size="small" label="Email" name="email" required disabled value={userData.email || username} onChange={handleValueChange} />
+          <TextField size="small" label="Contact Number" required name="contactNumber" value={userData.contactNumber} onChange={handleValueChange} />
+          <TextField size="small" label="Address" required name="address" value={userData.address} onChange={handleValueChange} />
           <SkillsLanguages title="Skills" onData={handleSkills} initialData={userData?.skills} />
           <SkillsLanguages title="Langauges" onData={handleLangauges} initialData={userData?.languages} />
           <Education onData={handleEducation} initialData={userData?.education} />
+          {error && (
+            <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
+              <Typography variant="caption" color="error">
+                {error}
+              </Typography>
+            </div>
+          )}
           <FormFooter>
             <Button variant="contained" size="small" onClick={handleSubmit} disabled={loading}>
               {isEdit ? "Update" : "Save"}
