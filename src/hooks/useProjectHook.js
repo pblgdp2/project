@@ -51,6 +51,15 @@ export default function useProject() {
     }
   };
 
+  const getTrendingProjects = async () => {
+    try {
+      const resp = await getApi("/blog/trending");
+      return resp;
+    } catch (error) {
+      // throw error;
+    }
+  };
+
   const getAllActiveProjectsBySearch = async (pageNumber = 0, noOfRecords = 10, userName = "all", approvedStatus = "true", category = []) => {
     setLoading(true);
     try {
@@ -216,12 +225,32 @@ export default function useProject() {
 
   const getDashboardData = async (year = new Date().getFullYear()) => {
     try {
+      const respSummary = await getApi(`/blog/userDashboardSummary/${year}`);
       const resp = await getApi(`/blog/dashboard/year/${year}/${username}`);
       const respData = await getApi(`/blog/getapprovedAndUnApproved`);
       return {
         graphData: resp,
         data: respData,
+        summary: respSummary,
       };
+    } catch (error) {
+      // throw error;
+    }
+  };
+
+  const getDashboardUsersCount = async (year = new Date().getFullYear(), month = new Date().getMonth()) => {
+    try {
+      const respUsers = await getApi(`/blog/blogUsersCount/yearmonth/${year}/${month > 9 ? month : "0" + month}`);
+      return respUsers;
+    } catch (error) {
+      // throw error;
+    }
+  };
+
+  const getDashboardCategoryCount = async (year = new Date().getFullYear()) => {
+    try {
+      const respCategory = await getApi(`/blog/dashboard/year/${year}`);
+      return respCategory;
     } catch (error) {
       // throw error;
     }
@@ -394,6 +423,9 @@ export default function useProject() {
     approveProjectRequest,
     deleteProject,
     deleteComment,
+    getTrendingProjects,
+    getDashboardCategoryCount,
+    getDashboardUsersCount,
     projectsData,
     paginationData,
     loading,

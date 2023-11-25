@@ -75,7 +75,7 @@ export default function Requests() {
 
 function ApprovedRequests({ data = [], loading = false }) {
   return data.length ? (
-    data.map((item) => <ProjectCard key={item.id} data={item} addComment={false} />)
+    data.map((item) => <ProjectCard key={item.id} data={item} addComment={false} showUserProfile />)
   ) : loading ? (
     <Typography>Loading...</Typography>
   ) : (
@@ -85,7 +85,7 @@ function ApprovedRequests({ data = [], loading = false }) {
 
 function PendingRequests({ data = [], loading = false }) {
   return data.length ? (
-    data.map((item) => <ProjectCard key={item.id} data={item} addComment={false} />)
+    data.map((item) => <ProjectCard key={item.id} data={item} addComment={false} showUserProfile />)
   ) : loading ? (
     <Typography>Loading...</Typography>
   ) : (
@@ -102,6 +102,7 @@ function RequestApproval({ data = [], onApproveProjectRequest = () => {}, loadin
         addComment={false}
         showProjectApprovalRequests
         onApproveProjectRequest={(user) => onApproveProjectRequest(user, item.id)}
+        showUserProfile
       />
     ))
   ) : loading ? (

@@ -12,3 +12,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.piechart-container .MuiChartsLegend-root {
+  /* display: none !important; */
+}

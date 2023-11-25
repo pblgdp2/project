@@ -36,26 +36,34 @@ export default function useUser() {
     }
   };
 
-  const getUserProfile = async (username, token) => {
+  const getUserProfile = async (username, token, returnData = false) => {
     dispatch({ type: "PROFILE_LOADING", payload: true });
     try {
       const resp = await getApi(`/profile/get/${username}`, token);
       if (resp && typeof resp === "string") {
-        dispatch({
-          type: "PROFILE_UPDATE",
-          payload: {
-            data: {},
-            available: false,
-          },
-        });
+        if (returnData) {
+          return null;
+        } else {
+          dispatch({
+            type: "PROFILE_UPDATE",
+            payload: {
+              data: {},
+              available: false,
+            },
+          });
+        }
       } else if (resp) {
-        dispatch({
-          type: "PROFILE_UPDATE",
-          payload: {
-            data: resp,
-            available: true,
-          },
-        });
+        if (returnData) {
+          return resp;
+        } else {
+          dispatch({
+            type: "PROFILE_UPDATE",
+            payload: {
+              data: resp,
+              available: true,
+            },
+          });
+        }
       } else {
         throw new Error("Something went wrong");
       }

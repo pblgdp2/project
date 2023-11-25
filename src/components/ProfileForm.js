@@ -61,6 +61,7 @@ export default function ProfileForm({ isEdit = false, data = {}, onClose = () =>
           skills: {},
           languages: {},
           education: [],
+          experience: [],
         }
   );
   const [loading, setLoading] = useState(false);
@@ -103,6 +104,13 @@ export default function ProfileForm({ isEdit = false, data = {}, onClose = () =>
     setUserData((prevState) => ({
       ...prevState,
       education: data,
+    }));
+  };
+
+  const handleExperience = (data) => {
+    setUserData((prevState) => ({
+      ...prevState,
+      experience: data,
     }));
   };
 
@@ -175,6 +183,7 @@ export default function ProfileForm({ isEdit = false, data = {}, onClose = () =>
           <SkillsLanguages title="Skills" onData={handleSkills} initialData={userData?.skills} />
           <SkillsLanguages title="Langauges" onData={handleLangauges} initialData={userData?.languages} />
           <Education onData={handleEducation} initialData={userData?.education} />
+          <Experience onData={handleExperience} initialData={userData?.experience || []} />
           {error && (
             <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
               <Typography variant="caption" color="error">
@@ -390,6 +399,128 @@ function Education({ onData = () => {}, initialData = [] }) {
             InputLabelProps={{ shrink: true }}
             name="endDate"
             value={educationData?.endDate}
+            onChange={handleChange}
+          />
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button size="small" variant="outlined" onClick={handleAdd}>
+            Add
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Experience({ onData = () => {}, initialData = [] }) {
+  const [experienceData, setExperienceData] = useState({
+    company: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+  });
+  const [data, setData] = useState(initialData);
+
+  useEffect(() => {
+    onData(data);
+  }, [data]);
+
+  const handleAdd = () => {
+    const { company, description } = experienceData;
+    if (company.trim() && description.trim()) {
+      setData((prevState) => [...(prevState || []), experienceData]);
+      setExperienceData({
+        company: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+      });
+    }
+  };
+
+  const handleRemove = (index) => {
+    setData((prevState) => {
+      prevState.splice(index, 1);
+      return [...prevState];
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setExperienceData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        border: "0.5px solid gray",
+        padding: "1rem",
+        borderRadius: "10px",
+      }}
+    >
+      <Typography variant="body1">Experience</Typography>
+      {data.length > 0
+        ? data.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "1rem",
+                padding: "0.5rem",
+                border: "0.5px solid gray",
+                borderRadius: "10px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
+                <Typography variant="body2">Company: {item.company}</Typography>
+                <Typography variant="body2">Description: {item.description}</Typography>
+                <Typography variant="body2">
+                  Start Date: {item.startDate ? moment(new Date(item.startDate)).format("MMM YYYY") : "Present"}
+                </Typography>
+                <Typography variant="body2">End Date: {item.endDate ? moment(new Date(item.endDate)).format("MMM YYYY") : "Present"}</Typography>
+              </div>
+              <IconButton size="small" color="error" onClick={() => handleRemove(index)}>
+                <Trash fontSize={15} />
+              </IconButton>
+            </div>
+          ))
+        : null}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <TextField size="small" label="Company" fullWidth name="company" value={experienceData?.company} onChange={handleChange} />
+        <TextField size="small" label="Description" fullWidth name="description" value={experienceData?.description} onChange={handleChange} />
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <TextField
+            size="small"
+            label="Start Date"
+            fullWidth
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            name="startDate"
+            value={experienceData?.startDate}
+            onChange={handleChange}
+          />
+          <TextField
+            size="small"
+            label="End Date"
+            fullWidth
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            name="endDate"
+            value={experienceData?.endDate}
             onChange={handleChange}
           />
         </div>

@@ -6,6 +6,7 @@ import ProjectsHistory from "../components/ProjectsHistory";
 import Education from "../components/Education";
 import useAppContext from "../hooks/useAppContextHook";
 import ProfileForm from "../components/ProfileForm";
+import { useEffect } from "react";
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -51,23 +52,35 @@ const ProgressBar = styled.div`
   border-radius: 10px;
 `;
 
-export default function Profile() {
+export default function Profile({ userProfile = null }) {
   const [editProfile, setEditProfile] = useState(false);
+  const [profile, setProfile] = useState({});
+  // const [userData, setUserData] = useState({});
 
   const {
-    appState: { user, profile },
+    appState: { user, profile: userData },
   } = useAppContext();
+
+  useEffect(() => {
+    if (userProfile) {
+      setProfile(userProfile);
+    } else {
+      setProfile(userData);
+    }
+  }, [userProfile]);
 
   return (
     <ProfileContainer>
-      <Typography variant="h5">Profile</Typography>
+      {userProfile ? null : <Typography variant="h5">Profile</Typography>}
       <Grid container spacing={2}>
         <Grid item md={4}>
           <ProfileGridItemContainer>
             <AvatarContainer>
               <Avatar src={`data:image/png;base64,${profile?.userImagePath}` || ""} sx={{ width: 150, height: 150 }} />
               <div>
-                <Typography>{profile?.firstName} {profile?.lastName}</Typography>
+                <Typography>
+                  {profile?.firstName} {profile?.lastName}
+                </Typography>
               </div>
             </AvatarContainer>
             <div
@@ -81,9 +94,7 @@ export default function Profile() {
             >
               <IconTypography>
                 <Briefcase color="#1976d2" />
-                <Typography variant="subtitle1">
-                  {profile?.designation}
-                </Typography>
+                <Typography variant="subtitle1">{profile?.designation}</Typography>
               </IconTypography>
               <IconTypography>
                 <House color="#1976d2" />
@@ -95,9 +106,7 @@ export default function Profile() {
               </IconTypography>
               <IconTypography>
                 <Phone color="#1976d2" />
-                <Typography variant="subtitle1">
-                  {profile?.contactNumber}
-                </Typography>
+                <Typography variant="subtitle1">{profile?.contactNumber}</Typography>
               </IconTypography>
             </div>
             <div
@@ -165,22 +174,20 @@ export default function Profile() {
                 ))}
             </div>
           </ProfileGridItemContainer>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "1rem",
-            }}
-          >
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => setEditProfile(true)}
+          {userProfile ? null : (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "1rem",
+              }}
             >
-              Edit Profile
-            </Button>
-          </div>
+              <Button variant="contained" size="small" onClick={() => setEditProfile(true)}>
+                Edit Profile
+              </Button>
+            </div>
+          )}
         </Grid>
         <Grid item md={8}>
           <Grid container spacing={2}>
@@ -190,16 +197,14 @@ export default function Profile() {
               </ProfileGridItemContainer>
             </Grid>
             <Grid item xs={12}>
-              {/* <ProfileGridItemContainer>
-                <ProjectsHistory />
-              </ProfileGridItemContainer> */}
+              <ProfileGridItemContainer>
+                <Education title="Experience" data={profile?.experience} />
+              </ProfileGridItemContainer>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-      {editProfile && (
-        <ProfileForm isEdit data={profile} onClose={() => setEditProfile(false)} />
-      )}
+      {editProfile && <ProfileForm isEdit data={profile} onClose={() => setEditProfile(false)} />}
     </ProfileContainer>
   );
 }

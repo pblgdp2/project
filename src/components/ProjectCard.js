@@ -26,6 +26,7 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import useAppContext from "../hooks/useAppContextHook";
 import { Trash } from "@phosphor-icons/react";
+import UserProfileModal from "./UserProfileModal";
 
 const img = "https://1.img-dpreview.com/files/p/TS1200x900~sample_galleries/1330372094/1129645829.jpg";
 const img1 = "https://3.img-dpreview.com/files/p/TS1200x900~sample_galleries/1330372094/1693761761.jpg";
@@ -78,11 +79,13 @@ export default function ProjectCard({
   onDelete = () => {},
   onCommentDelete = () => {},
   onReadMore = () => {},
+  showUserProfile = false,
 }) {
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showAttachements, setShowAttachements] = useState(false);
   const [commentVal, setCommentVal] = useState("");
+  const [userProfileName, setUserProfileName] = useState("");
 
   const {
     appState: {
@@ -111,7 +114,14 @@ export default function ProjectCard({
           <Typography variant="body2" color="text.secondary">
             {data?.shortIntro}
           </Typography>
-          <div style={{ display: "flex", alignItems: "center", marginTop: "0.5rem", gap: "0.5rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", marginTop: "0.5rem", gap: "0.5rem", cursor: "pointer" }}
+            onClick={() => {
+              if (showUserProfile) {
+                setUserProfileName(data?.crtdBy);
+              }
+            }}
+          >
             <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>{data?.crtdBy.slice(0, 2).toUpperCase()}</Avatar>
             <Typography variant="caption">{data?.crtdBy}</Typography>
           </div>
@@ -370,6 +380,7 @@ export default function ProjectCard({
           </CardContent>
         )}
       </CardContainer>
+      {userProfileName ? <UserProfileModal userEmail={userProfileName} onClose={() => setUserProfileName("")} /> : null}
     </BlogCardContainer>
   );
 }
